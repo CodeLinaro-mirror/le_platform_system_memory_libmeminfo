@@ -14,10 +14,30 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
+#ifdef __ANDROID__
 #include <android-base/file.h>
 #include <android-base/parseint.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
+#else
+#include <base/file.h>
+#include <base/parseint.h>
+#include <base/stringprintf.h>
+#include <base/strings.h>
+#include <functional>
+#include <limits.h>
+#if defined(__GLIBC__)
+static const char* getprogname() {
+   return program_invocation_short_name;
+}
+#endif
+#endif
 #include <dirent.h>
 #include <errno.h>
 #include <inttypes.h>

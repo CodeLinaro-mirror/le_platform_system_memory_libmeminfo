@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
+#ifdef __ANDROID__
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/parseint.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
+#else
+#include <base/file.h>
+#include <base/logging.h>
+#include <base/parseint.h>
+#include <base/stringprintf.h>
+#include <base/strings.h>
+#include <dirent.h>
+#endif
+
 #include <inttypes.h>
 
 #include <dmabufinfo/dmabuf_sysfs_stats.h>

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #pragma once
 
 #include <sys/types.h>
@@ -54,13 +60,24 @@ class SysMemInfo final {
 
 
     static constexpr std::initializer_list<std::string_view> kDefaultSysMemInfoTags = {
+      #ifdef __ANDROID__
             SysMemInfo::kMemTotal,      SysMemInfo::kMemFree,        SysMemInfo::kMemBuffers,
             SysMemInfo::kMemCached,     SysMemInfo::kMemShmem,       SysMemInfo::kMemSlab,
             SysMemInfo::kMemSReclaim,   SysMemInfo::kMemSUnreclaim,  SysMemInfo::kMemSwapTotal,
             SysMemInfo::kMemSwapFree,   SysMemInfo::kMemMapped,      SysMemInfo::kMemVmallocUsed,
             SysMemInfo::kMemPageTables, SysMemInfo::kMemKernelStack, SysMemInfo::kMemKReclaimable,
             SysMemInfo::kMemActive,     SysMemInfo::kMemInactive,    SysMemInfo::kMemUnevictable,
-    };
+      #else
+            /*
+            gcc have some issue with compilation of above initializer_list, seems to be know issue
+            with gcc, with clang its fine, error gcc its throwing is:
+            ./libmeminfo/include/meminfo/sysmeminfo.h:63:5: error: modification of '<temporary>' is not a constant expression
+            kDefaultSysMemInfoTags is used in funciton ReadMemInfo and ReadMemInfo, with these argument are only called
+            from test code libmeminfo_benchmark.cpp & libmeminfo_test.cpp,
+            for now we are making this initializer_list empty,<revisit later>.
+            */
+      #endif
+      };
 
     SysMemInfo() = default;
 

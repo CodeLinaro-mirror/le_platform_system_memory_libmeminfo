@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -28,19 +34,30 @@
 #include <meminfo/pageacct.h>
 #include <meminfo/procmeminfo.h>
 #include <meminfo/sysmeminfo.h>
+#ifdef __ANDROID__
 #include <vintf/VintfObject.h>
+
 
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
+#else
+#include <base/file.h>
+#include <base/logging.h>
+#include <base/stringprintf.h>
+#include <base/strings.h>
+#include <mutex>
+#endif
 
 using namespace std;
 using namespace android::meminfo;
+#ifdef __ANDROID__
 using android::vintf::KernelVersion;
 using android::vintf::RuntimeInfo;
 using android::vintf::VintfObject;
+#endif
 
 namespace fs = std::filesystem;
 
@@ -683,6 +700,7 @@ TEST(ProcMemInfo, SmapsTest) {
 #endif
 }
 
+#ifdef __ANDROID__
 TEST(SysMemInfo, TestSysMemInfoFile) {
     std::string meminfo = R"meminfo(MemTotal:        3019740 kB
 MemFree:         1809728 kB
@@ -755,6 +773,7 @@ Hugepagesize:       2048 kB)meminfo";
     EXPECT_EQ(mi.mem_inactive_kb(), 459092);
     EXPECT_EQ(mi.mem_unevictable_kb(), 3096);
 }
+#endif
 
 TEST(SysMemInfo, TestEmptyFile) {
     TemporaryFile tf;
@@ -801,6 +820,7 @@ enum {
     MEMINFO_COUNT
 };
 
+#if __ANDROID__
 TEST(SysMemInfo, TestZramWithTags) {
     std::string meminfo = R"meminfo(MemTotal:        3019740 kB
 MemFree:         1809728 kB
@@ -881,6 +901,7 @@ Hugepagesize:       2048 kB)meminfo";
     EXPECT_EQ(mem[MEMINFO_INACTIVE], 459092);
     EXPECT_EQ(mem[MEMINFO_UNEVICTABLE], 3096);
 }
+#endif
 
 TEST(SysMemInfo, TestVmallocInfoNoMemory) {
     std::string vmallocinfo =
@@ -963,7 +984,7 @@ TEST(SysMemInfo, TestReadIonPoolsSizeKb) {
     ASSERT_TRUE(ReadIonPoolsSizeKb(&size, file));
     EXPECT_EQ(size, 416);
 }
-
+#ifdef __ANDROID__
 TEST(SysMemInfo, TestReadGpuTotalUsageKb) {
     uint64_t size;
 
@@ -982,6 +1003,7 @@ TEST(SysMemInfo, TestReadGpuTotalUsageKb) {
     ASSERT_TRUE(ReadGpuTotalUsageKb(&size));
     EXPECT_TRUE(size >= 0);
 }
+#endif
 
 class DmabufHeapStats : public ::testing::Test {
   public:

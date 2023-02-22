@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
@@ -24,8 +30,17 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
+#ifdef __ANDROID__
 #include <android-base/stringprintf.h>
+#else
+#include <base/stringprintf.h>
+#include <functional>
+#if defined(__GLIBC__)
+static const char* getprogname() {
+   return program_invocation_short_name;
+}
+#endif
+#endif
 #include <meminfo/procmeminfo.h>
 
 using Vma = ::android::meminfo::Vma;

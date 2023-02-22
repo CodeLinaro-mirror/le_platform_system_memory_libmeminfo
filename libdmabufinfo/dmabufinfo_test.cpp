@@ -13,6 +13,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #include <gtest/gtest.h>
 #include <inttypes.h>
 #include <linux/dma-buf.h>
@@ -26,11 +32,20 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef __ANDROID__
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <android-base/unique_fd.h>
+#else
+#include <base/file.h>
+#include <base/logging.h>
+#include <base/stringprintf.h>
+#include <base/strings.h>
+#include <base/unique_fd.h>
+#include <sys/ioctl.h>
+#endif
 #include <ion/ion.h>
 #include <unistd.h>
 
@@ -45,6 +60,7 @@ namespace fs = std::filesystem;
 #define MAX_HEAP_NAME 32
 #define ION_HEAP_ANY_MASK (0x7fffffff)
 
+#ifdef __ANDROID__
 struct ion_heap_data {
     char name[MAX_HEAP_NAME];
     __u32 type;
@@ -53,6 +69,7 @@ struct ion_heap_data {
     __u32 reserved1;
     __u32 reserved2;
 };
+#endif
 
 #ifndef DMA_BUF_SET_NAME
 #define DMA_BUF_SET_NAME _IOW(DMA_BUF_BASE, 5, const char*)

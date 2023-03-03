@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #include <getopt.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -25,6 +31,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#if defined(__GLIBC__)
+static const char* getprogname() {
+   return program_invocation_short_name;
+}
+#endif
 
 #include <meminfo/pageacct.h>
 #include <meminfo/procmeminfo.h>

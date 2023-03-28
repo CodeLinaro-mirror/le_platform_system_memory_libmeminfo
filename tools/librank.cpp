@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ Changes from Qualcomm Innovation Center are provided under the following license:
+ Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ SPDX-License-Identifier: BSD-3-Clause-Clear
+*/
+
 #include <dirent.h>
 #include <errno.h>
 #include <error.h>
@@ -30,10 +36,24 @@
 #include <memory>
 #include <vector>
 
+#ifdef __ANDROID__
 #include <android-base/file.h>
 #include <android-base/parseint.h>
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
+#else
+#include <base/file.h>
+#include <base/parseint.h>
+#include <base/stringprintf.h>
+#include <base/strings.h>
+#include <functional>
+#if defined(__GLIBC__)
+static const char* getprogname() {
+   return program_invocation_short_name;
+}
+#endif
+
+#endif
 
 #include <meminfo/procmeminfo.h>
 
@@ -191,7 +211,7 @@ static bool scan_libs_per_process(pid_t pid) {
 
     for (auto& map : maps) {
         // skip library / map if prefix for the path doesn't match
-        if (!g_prefix_filter.empty() && !::android::base::StartsWith(map.name, g_prefix_filter)) {
+        if (!g_prefix_filter.empty() && !::android::base::StartsWith(map.name, g_prefix_filter.c_str())) {
             continue;
         }
         // Skip maps based on map permissions
